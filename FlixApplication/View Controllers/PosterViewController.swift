@@ -70,9 +70,15 @@ class PosterViewController: UIViewController, UICollectionViewDataSource {
             let posterURL = URL(string: baseUrlString + posterPathString)!
             cell.posterImageView.af_setImage(withURL: posterURL)
         }
-        
-        
         return cell
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let cell = sender as! UICollectionViewCell
+        if let indexPath = collectionView.indexPath(for: cell){
+            let movie = movies[indexPath.item]
+            let detailViewController = segue.destination as! DetailViewController
+            detailViewController.movie = movie
+        }
     }
 
     override func didReceiveMemoryWarning() {
