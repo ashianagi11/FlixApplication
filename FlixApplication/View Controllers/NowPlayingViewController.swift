@@ -9,13 +9,14 @@
 import UIKit
 import AlamofireImage
 
-class NowPlayingViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate {
+class NowPlayingViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, UISearchBarDelegate, UISearchResultsUpdating {
     
     @IBOutlet weak var searchingBar: UISearchBar!
     @IBOutlet weak var activityIndicator: UIActivityIndicatorView!
     @IBOutlet weak var tableView: UITableView!
     
     var movies: [[String: Any]] = []
+    var filteredMovies: [[String: Any]] = []
     var refreshControl: UIRefreshControl!
     
     override func viewDidLoad() {
@@ -29,11 +30,12 @@ class NowPlayingViewController: UIViewController, UITableViewDelegate, UITableVi
         tableView.dataSource = self
         tableView.delegate = self
         searchingBar.delegate = self
+        filteredMovies = movies
         fetchMovies()
 
     }
+    
     @objc func didPullToRefresh(_ refreshControl: UIRefreshControl) {
-        
         fetchMovies()
     }
     func fetchMovies() {
@@ -57,6 +59,7 @@ class NowPlayingViewController: UIViewController, UITableViewDelegate, UITableVi
                 let dataDictionary = try! JSONSerialization.jsonObject(with: data, options: []) as! [String: Any]
                 let movie = dataDictionary["results"] as! [[String: Any]]
                 self.movies = movie
+                self.filteredMovies = movie
                 self.tableView.reloadData()
                 self.refreshControl.endRefreshing()
                 self.activityIndicator.stopAnimating()
@@ -66,12 +69,12 @@ class NowPlayingViewController: UIViewController, UITableViewDelegate, UITableVi
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return movies.count
+        return filteredMovies.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "MovieCell", for: indexPath) as! MovieCell
-        let movie = movies[indexPath.row]
+        let movie = filteredMovies[indexPath.row]
         let title = movie["title"] as! String
         let overview = movie["overview"] as! String
         cell.title.text = title
@@ -85,26 +88,16 @@ class NowPlayingViewController: UIViewController, UITableViewDelegate, UITableVi
         return cell
     }
     
-//    func filterContent(for searchText: String) {
-//        if searchText.isEmpty {
-//            movies = ""
-//        } else {
-//            movies = movies.filter({ (movie) -> Bool in
-//                let title = movie["title"] as! String
-//                let isMatch = title.localizedCaseInsensitiveContains(searchText)
-//                return isMatch
-//            })
-//        }
-//
-//    }
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        self.searchingBar.showsCancelButton = true
     }
     
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
         searchBar.showsCancelButton = false
         searchBar.text = ""
         searchBar.resignFirstResponder()
+    }
+    
+    func updateSearchResults(for searchController: UISearchController) {
     }
     
     override func didReceiveMemoryWarning() {
