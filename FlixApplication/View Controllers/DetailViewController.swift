@@ -24,7 +24,7 @@ class DetailViewController: UIViewController {
     @IBOutlet weak var posterImageView: UIImageView!
     @IBOutlet weak var overviewLabel: UILabel!
     
-    var movie: [String: Any]?
+    var movie: [String: Any]? 
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,13 +35,19 @@ class DetailViewController: UIViewController {
             overviewLabel.text = movie[MovieKeys.overview] as? String
             let backdropPathString = movie[MovieKeys.backdropPath] as! String
             let posterPath = movie[MovieKeys.posterPath] as! String
+            let baseUrlString =  "https://image.tmdb.org/t/p/w500"
+            let backdropURL = URL(string: baseUrlString + backdropPathString)!
+            backDropImageView.af_setImage(withURL: backdropURL)
             
+            let posterPathURL = URL(string: baseUrlString + posterPath)!
+            posterImageView.af_setImage(withURL: posterPathURL)
         }
     }
-
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+       
+        
+        
     }
     
 

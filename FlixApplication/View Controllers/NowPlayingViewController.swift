@@ -32,14 +32,14 @@ class NowPlayingViewController: UIViewController, UITableViewDelegate, UITableVi
         searchingBar.delegate = self
         filteredMovies = movies
         fetchMovies()
-
+        
     }
     
     @objc func didPullToRefresh(_ refreshControl: UIRefreshControl) {
         fetchMovies()
     }
     func fetchMovies() {
-       
+        
         let url = URL(string: "https://api.themoviedb.org/3/movie/now_playing?api_key=6a6c894da15025c647e619f1b8e9613b&language=en-US&page=1")!
         let request = URLRequest(url: url, cachePolicy: .reloadIgnoringLocalCacheData, timeoutInterval: 10)
         let session = URLSession(configuration: .default, delegate: nil, delegateQueue: OperationQueue.main)
@@ -84,7 +84,7 @@ class NowPlayingViewController: UIViewController, UITableViewDelegate, UITableVi
         let baseUrlString =  "https://image.tmdb.org/t/p/w500"
         let posterUrl = URL(string: baseUrlString + posterPathString)!
         cell.posterImage.af_setImage(withURL: posterUrl)
-
+        
         return cell
     }
     
@@ -100,9 +100,18 @@ class NowPlayingViewController: UIViewController, UITableViewDelegate, UITableVi
     func updateSearchResults(for searchController: UISearchController) {
     }
     
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        let cell = sender as! UITableViewCell
+        if let indexPath = tableView.indexPath(for: cell) {
+            let movie = movies[indexPath.row]
+            let detailViewController = segue.destination as! DetailViewController
+            detailViewController.movie = movie
+        }
+    }
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
-       
+        
     }
     
 }
